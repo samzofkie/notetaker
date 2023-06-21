@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<head>
+  <title>Notes</title>
+  <style>
+    
+    body {
+      margin: 0px;
+    }
+    
+    textarea:focus {
+      outline: none;
+    }
+
+    #notesarea { 
+      resize: none;
+      width: 50%;
+      height: 100%;
+      
+      position: fixed;
+      left: 0;
+
+      background-color: Black;
+      border: 0px;
+      margin: 0px;
+      padding: 0px;
+
+      color: LightGray;
+    }
+
+    #renderbutton {
+      position: fixed;
+      right: 50%;
+      bottom: 0;
+    }
+
+    #textoutput {
+      position: fixed;
+      right: 0px;
+      width: 50%;
+      height: 100%;
+      border: none;
+    }
+  </style>
+  <script async src="index.js"></script>
+</head>
+<html>
+<body>
+
+  <label for="notesarea" style="display:none;">Notes Input</label>
+  <textarea autofocus id="notesarea" name="markdown" spellcheck="false"></textarea>
+
+  <button id="renderbutton" onclick="Render();">&ltCtrl + Enter&gt to render</button>
+
+  <iframe title="Rendered HTML output" id="textoutput"></iframe>
+
+</body>
+</html> 

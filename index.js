@@ -1,0 +1,30 @@
+document.onkeyup = function(e) {
+  if (e.ctrlKey && e.which == 13) {
+    Render();
+  }
+};
+
+var markdownInput = document.getElementById("notesarea");
+var iframeOutput = document.getElementById("textoutput");
+
+function Parser(markdown) {
+  let outputHtml = "";
+  for (let i=0; i<markdown.length; i++) {
+    if (markdown[i] == '#' && markdown[i+1] == ' ') {
+      i++;
+      outputHtml += "<h1>";
+      while (i<markdown.length && markdown[i] != '\n') {
+        outputHtml += markdown[i];
+        i++;
+      }
+      outputHtml += "</h1>";
+    } else {
+      outputHtml += markdown[i];
+    }
+  }
+  return outputHtml;
+}
+
+function Render() {
+  iframeOutput.srcdoc = Parser(markdownInput.value);
+}
