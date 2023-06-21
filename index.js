@@ -9,6 +9,7 @@ var iframeOutput = document.getElementById("textoutput");
 
 function Parser(markdown) {
   let outputHtml = "";
+  let codeTagParity = 0;
   for (let i=0; i<markdown.length; i++) {
     if (markdown[i] == '#' && markdown[i+1] == ' ') {
       i++;
@@ -18,6 +19,13 @@ function Parser(markdown) {
         i++;
       }
       outputHtml += "</h1>";
+    } else if (markdown[i] == "`") {
+      if (codeTagParity == 0)
+        outputHtml += "<code>"
+      else {
+        outputHtml += "</code>";
+      }
+      codeTagParity = (codeTagParity + 1) % 2;
     } else {
       outputHtml += markdown[i];
     }
