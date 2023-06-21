@@ -31,12 +31,15 @@ function Parser(markdown) {
     
     } else if (markdown[i] == "`") {
       if (codeTagParity == 0)
-        outputHtml += "<code>"
+        outputHtml += "<pre><code>"
       else {
-        outputHtml += "</code>";
+        outputHtml += "</code></pre>";
       }
       codeTagParity = (codeTagParity + 1) % 2;
-    
+   
+    } else if (markdown[i] == "\n") {
+      outputHtml += "<br>";
+
     } else {
       outputHtml += markdown[i];
     }
