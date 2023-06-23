@@ -1,0 +1,37 @@
+body {
+  margin: 0px;
+}
+
+textarea:focus {
+  outline: none;
+}
+
+#notearea { 
+  resize: none;
+  width: 50%;
+  height: 100%;
+  
+  position: fixed;
+  left: 0;
+
+  background-color: Black;
+  border: 0px;
+  margin: 0px;
+  padding: 0px;
+
+  color: LightGray;
+}
+
+#renderbutton {
+  position: fixed;
+  right: 50%;
+  bottom: 0;
+}
+
+#textoutput {
+  position: fixed;
+  right: 0px;
+  width: 50%;
+  height: 100%;
+  border: none;
+}

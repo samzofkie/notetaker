@@ -1,92 +1,33 @@
-document.onkeyup = function(e) {
-  if (e.ctrlKey && e.which == 13) {
-    Render();
+import React, { useState } from 'react';
+import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
+
+import Compile from './Compiler.js';
+
+function MyApp() {
+  const [note, setNote] = useState('');
+
+  function Render() {
+    console.log(Compile(note));
   }
-};
 
-var markdownInput = document.getElementById("notesarea");
-var iframeOutput = document.getElementById("textoutput");
-
-function Parser(markdown) {
-  let outputHtml = "";
-  let codeTagParity = 0, 
-      preTagParity = 0, 
-      underlineTagParity = 0;
-  let inAList = false;
-  for (let i=0; i<markdown.length; i++) {
-    
-    if (markdown[i] == '#' && markdown[i+1] == ' ') {
-      i++;
-      outputHtml += "<h1>";
-      while (i<markdown.length && markdown[i] != '\n') {
-        outputHtml += markdown[i];
-        i++;
-      }
-      outputHtml += "</h1>";
-
-    } else if (markdown[i] == "_" && markdown[i+1] == "_") {
-      if (underlineTagParity == 0)
-        outputHtml += "<u>";
-      else
-        outputHtml += "</u>";
-      i++;
-      underlineTagParity = (underlineTagParity + 1) % 2;
-    
-    } else if (markdown[i] == "`") {
-      if (markdown[i-1] == "\n") {
-        outputHtml += "<pre>";
-        preTagParity = 1;
-      }
-      if (codeTagParity == 0)
-        outputHtml += "<code>"
-      else {
-        outputHtml += "</code>";
-        if (preTagParity == 1) {
-          outputHtml += "</pre>";
-          preTagParity = 0;
-        }
-      }
-      codeTagParity = (codeTagParity + 1) % 2;
-      
-
-    } else if (markdown[i] === "\n") {
-      if (inAList) {
-        outputHtml += "</li>";
-        if (markdown[i+1] === "*") {
-          outputHtml += "<li>";
-          i++;
-        } else {
-          outputHtml += "</ul>";
-          inAList = false;
-        }
-      
-
-      /*if (markdown[i+1] === "*") {
-        if (!inAList)
-          outputHtml += "<ul>";
-        outputHtml += "<li>";*/
-      } else {
-        if (markdown[i+1] === "*") {
-          inAList = true;
-          outputHtml += "<ul><li>";
-          i++;
-        } else {
-          outputHtml += "<br>";
-        }
-      }
-    } else if (markdown[i] == "<") {
-      outputHtml += "&lt";
-
-    } else if (markdown[i] == ">") {
-      outputHtml += "&gt";
-
-    } else {
-      outputHtml += markdown[i];
-    }
-  }
-  return outputHtml;
+  return (
+    <>
+      <textarea
+        value={note}
+        onChange={e => setNote(e.target.value)}
+        id={'notearea'}
+      />
+      <button
+        onClick={Render}
+        id={'renderbutton'}>
+          {'<Ctrl + Enter> to render'}
+      </button>
+      <iframe id={'iframeoutput'} />
+    </>
+  );
 }
 
-function Render() {
-  iframeOutput.srcdoc = Parser(markdownInput.value);
-}
+const container = document.getElementById('root');
+const root = createRoot(container);
+root.render(<MyApp />);
