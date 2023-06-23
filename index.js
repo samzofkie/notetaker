@@ -11,7 +11,8 @@ function Parser(markdown) {
   let outputHtml = "";
   let codeTagParity = 0, 
       preTagParity = 0, 
-      underlineTagParity = 0; 
+      underlineTagParity = 0;
+  let inAList = false;
   for (let i=0; i<markdown.length; i++) {
     
     if (markdown[i] == '#' && markdown[i+1] == ' ') {
@@ -46,10 +47,33 @@ function Parser(markdown) {
         }
       }
       codeTagParity = (codeTagParity + 1) % 2;
-   
-    } else if (markdown[i] == "\n") {
-      outputHtml += "<br>";
+      
 
+    } else if (markdown[i] === "\n") {
+      if (inAList) {
+        outputHtml += "</li>";
+        if (markdown[i+1] === "*") {
+          outputHtml += "<li>";
+          i++;
+        } else {
+          outputHtml += "</ul>";
+          inAList = false;
+        }
+      
+
+      /*if (markdown[i+1] === "*") {
+        if (!inAList)
+          outputHtml += "<ul>";
+        outputHtml += "<li>";*/
+      } else {
+        if (markdown[i+1] === "*") {
+          inAList = true;
+          outputHtml += "<ul><li>";
+          i++;
+        } else {
+          outputHtml += "<br>";
+        }
+      }
     } else if (markdown[i] == "<") {
       outputHtml += "&lt";
 
