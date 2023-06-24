@@ -6,21 +6,19 @@ import Compile from "./Compiler.js";
 function MyApp() {
   const [note, setNote] = useState("");
 
-  function Render() {
-    console.log(Compile(note));
-  }
-
   return (
     <>
       <textarea
         value={note}
         onChange={(e) => setNote(e.target.value)}
+        spellCheck={false}
         id={"notearea"}
       />
-      <button onClick={Render} id={"renderbutton"}>
-        {"<Ctrl + Enter> to render"}
-      </button>
-      <iframe id={"iframeoutput"} title={"Rendered HTML output"} />
+      <iframe
+        srcDoc={Compile(note)}
+        id={"iframeoutput"}
+        title={"Rendered HTML output"}
+      />
     </>
   );
 }

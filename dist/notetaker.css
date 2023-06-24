@@ -28,7 +28,7 @@ textarea:focus {
   bottom: 0;
 }
 
-#textoutput {
+#iframeoutput {
   position: fixed;
   right: 0px;
   width: 50%;
