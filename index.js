@@ -22,7 +22,7 @@ function MyApp() {
         id={'renderbutton'}>
           {'<Ctrl + Enter> to render'}
       </button>
-      <iframe id={'iframeoutput'} />
+      <iframe id={'iframeoutput'} title={"Rendered HTML output"}/>
     </>
   );
 }
