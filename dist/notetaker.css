@@ -6,11 +6,11 @@ textarea:focus {
   outline: none;
 }
 
-#notearea { 
+#notearea {
   resize: none;
   width: 50%;
   height: 100%;
-  
+
   position: fixed;
   left: 0;
 

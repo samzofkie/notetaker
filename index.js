@@ -3,9 +3,8 @@ import { createRoot } from "react-dom/client";
 
 import Compile from "./Compiler.js";
 
-const exampleString = 
+const exampleString =
   "# Header\n__Underline__ `inline code` normal text\n`block o\n  code respects\n    indentation`\n* bullet\n* points";
-
 
 function MyApp() {
   const [note, setNote] = useState(exampleString);
