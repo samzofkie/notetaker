@@ -3,8 +3,13 @@ import { createRoot } from "react-dom/client";
 
 import Compile from "./Compiler.js";
 
+// TODO
+// * html download button
+// * incremental rendering
+// * font / color syntax
+
 const exampleString =
-  "# Header\n__Underline__ `inline code` normal text\n`block o\n  code respects\n    indentation`\n* bullet\n* points";
+  "# Header\nNormal text\nLine breaks __underlined__ `inline code`\n`block o\n  code respects\n    indentation`\n* bullet\n* points";
 
 function MyApp() {
   const [note, setNote] = useState(exampleString);
