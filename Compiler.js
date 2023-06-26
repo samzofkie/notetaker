@@ -70,6 +70,8 @@ function Compile(input) {
       handleUnderline(input, state);
     else if (input[state.index] === "`") handleCode(input, state);
     else if (input[state.index] === "\n") handleNewline(input, state);
+    else if (input[state.index] === "<") state.output += "&lt";
+    else if (input[state.index] === ">") state.output += "&gt";
     else state.output += input[state.index];
   }
   if (state.inHeader) state.output += "</h1>";

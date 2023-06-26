@@ -121,7 +121,7 @@ const test_groups = {
     },
     {
       name: "header in code block",
-      input: "\n`here we are in a # code\n  block</pre>",
+      input: "\n`here we are in a # code\n  block`",
       output: "\n<pre>here we are in a # code\n  block</pre>"
     },
     {
@@ -133,6 +133,28 @@ const test_groups = {
       name: "unfinished code block",
       input: "\n`oops",
       output: "\n<pre>oops"
+    }
+  ],
+  comparison_operators: [
+    {
+      name: "less than",
+      input: "<",
+      output: "&lt"
+    },
+    {
+      name: "greater than",
+      input: ">",
+      output: "&gt"
+    },
+    {
+      name: "less than in code",
+      input: "`<`",
+      output: "<code>&lt</code>"
+    },
+    {
+      name: "greater than in code block",
+      input: "\n`>`",
+      output: "\n<pre>&gt</pre>"
     }
   ]
 };
