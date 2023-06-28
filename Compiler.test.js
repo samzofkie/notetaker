@@ -1,4 +1,4 @@
-import Compile from "./Compiler.js";
+import Compiler from "./Compiler.js";
 
 const test_groups = {
   basic_text: [
@@ -6,7 +6,6 @@ const test_groups = {
     { name: "compile word", input: "word", output: "word" },
     { name: "compile words", input: "words", output: "words" }
   ],
-
   header: [
     {
       name: "header only",
@@ -34,7 +33,6 @@ const test_groups = {
       output: "<h1>This should be a header</h1>\n<h1>As should this</h1>"
     }
   ],
-
   line_break: [
     {
       name: "normal text line break",
@@ -52,7 +50,6 @@ const test_groups = {
       output: "<h1>header</h1>\n<br>\ntext"
     }
   ],
-
   underline: [
     { name: "underlined word", input: "__word__", output: "<u>word</u>" },
     {
@@ -71,7 +68,6 @@ const test_groups = {
       output: "<h1><u>UNDERLINED HEADER!</h1>\nDOESN'T END TILL HERE</u>!"
     }
   ],
-
   code: [
     { name: "code word", input: "`word`", output: "<code>word</code>" },
     {
@@ -156,13 +152,27 @@ const test_groups = {
       input: "\n`>`",
       output: "\n<pre>&gt</pre>"
     }
-  ]
+  ],
+  bullets: [
+    {
+      name: "single bullet no end",
+      input: "\n* bullet",
+      output: "\n<ul><li>bullet</li></ul>"
+    },
+    {
+      name: "two bullets",
+      input: "\n* one\n* two\n",
+      output: "\n<ul><li>one</li>\n<li>two</li></ul>"
+    }
+  ] 
 };
+
+let compiler = new Compiler();
 
 for (let group in test_groups)
   describe(group, () => {
     for (let test_case of test_groups[group])
       test(test_case.name, () => {
-        expect(Compile(test_case.input)).toBe(test_case.output);
+        expect(compiler.compile(test_case.input)).toBe(test_case.output);
       });
   });
