@@ -1,12 +1,40 @@
 import Compiler from "./Compiler.js";
 
+function htmlWrap(s) {
+  return "<!DOCTYPE html>\n<html>\n<body>\n" + s + "</body>\n</html>";
+}
+
 const test_groups = {
-  basic_text: [
-    { name: "compile empty string", input: "", output: "" },
-    { name: "compile word", input: "word", output: "word" },
-    { name: "compile words", input: "words", output: "words" }
+  html_structure: [
+    {
+      name: "empty string",
+      input: "",
+      output: ""
+    }
   ],
-  header: [
+  paragraphs: [
+    {
+      name: "single word",
+      input: "word",
+      output: "<p>word</p>\n"
+    },
+    {
+      name: "a few words",
+      input: "a few words",
+      output: "<p>a few words</p>\n"
+    },
+    {
+      name: "new paragraph",
+      input: "i want a new paragraph\nnow",
+      output: "<p>i want a new paragraph</p>\n<p>now</p>\n"
+    },
+    {
+      name: "double newline",
+      input: "this is a paragraph\n\nand another one",
+      output: "<p>this is a paragraph</p>\n<p>and another one</p>\n"
+    }
+  ]
+  /*header: [
     {
       name: "header only",
       input: "# This should be a header\n",
@@ -31,23 +59,6 @@ const test_groups = {
       name: "double header",
       input: "# This should be a header\n# As should this",
       output: "<h1>This should be a header</h1>\n<h1>As should this</h1>"
-    }
-  ],
-  line_break: [
-    {
-      name: "normal text line break",
-      input: "this is\nnormal",
-      output: "this is<br>\nnormal"
-    },
-    {
-      name: "double line break",
-      input: "there should be\n\ntwo lines between this",
-      output: "there should be<br>\n<br>\ntwo lines between this"
-    },
-    {
-      name: "header line break",
-      input: "# header\n\ntext",
-      output: "<h1>header</h1>\n<br>\ntext"
     }
   ],
   underline: [
@@ -164,7 +175,7 @@ const test_groups = {
       input: "\n* one\n* two\n",
       output: "\n<ul><li>one</li>\n<li>two</li></ul>"
     }
-  ] 
+  ] */
 };
 
 let compiler = new Compiler();
@@ -173,6 +184,8 @@ for (let group in test_groups)
   describe(group, () => {
     for (let test_case of test_groups[group])
       test(test_case.name, () => {
-        expect(compiler.compile(test_case.input)).toBe(test_case.output);
+        expect(compiler.compile(test_case.input)).toBe(
+          htmlWrap(test_case.output)
+        );
       });
   });
