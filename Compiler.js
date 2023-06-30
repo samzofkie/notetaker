@@ -3,67 +3,44 @@ export default class Compiler {
 
   compile(input) {
     this.input = input;
-    this.inParagraph = false;
-
-    this.output = "<!DOCTYPE html>\n<html>\n<body>\n";
-
-    for (this.index = 0; this.index < this.input.length; this.index++) {
-      this.currChar = this.input[this.index];
-      if (this.currChar === "\n") this.handleNewline();
-      else this.handleCharacter();
-    }
-    this.closeOpenTags();
-    
-    return this.output;
-  }
-
-  closeOpenTags() {
-    if (this.inParagraph) this.output += "</p>\n";
-    this.output += "</body>\n</html>";
-  }
-
-  handleCharacter() {
-    if (!this.inParagraph) {
-      this.output += "<p>";
-      this.inParagraph = true;
-    }
-    this.output += this.currChar;
-  }
-
-  handleNewline() {
-    if (this.inParagraph) {
-      this.output += "</p>\n";
-      this.inParagraph = false;
-    }
-  }
-}
-
-/*export default class Compiler {
-  constructor() {
     this.inHeader = false;
     this.inUnderline = false;
     this.inCode = false;
     this.inCodeBlock = false;
     this.inList = false;
-  }
+    this.inParagraph = false;
+    this.output = "<!DOCTYPE html>\n<html>\n<body>\n";
 
-  compile(input) {
-    this.input = input;
-    this.output = "";
     for (this.index = 0; this.index < this.input.length; this.index++) {
-      let current = this.input[this.index];
-      let currentTwo = current + this.nextCharacter();
-      if (currentTwo === "# ") this.handleHeader();
-      else if (currentTwo === "__") this.handleUnderline();
-      else if (current === "`") this.handleCode();
-      else if (current === "*") this.handleBullet();
-      else if (current === "\n") this.handleNewline();
-      else if (current === "<") this.output += "&lt";
-      else if (current === ">") this.output += "&gt";
-      else this.output += this.input[this.index];
+      this.currChar = this.input[this.index];
+      switch (this.currChar) {
+        case "#":
+          this.handleHeader();
+          break;
+        case "_":
+          this.handleUnderline();
+          break;
+        case "`":
+          this.handleCode();
+          break;
+        case "*":
+          this.handleBullet();
+          break;
+        case "\n":
+          this.handleNewline();
+          break;
+        case "<":
+          this.output += "&lt";
+          break;
+        case ">":
+          this.output += "&gt";
+          break;
+        default:
+          this.handleCharacter();
+          break;
+      }
     }
-    if (this.inHeader)
-      this.output += "</h1>";
+    this.closeOpenTags();
     return this.output;
   }
 
@@ -71,30 +48,42 @@ export default class Compiler {
     return this.input[this.index + 1];
   }
 
-  nextTwoCharacters() {
-    return this.input.slice(this.index + 1, this.index + 3);
-  }
-
   previousCharacter() {
     return this.input[this.index - 1];
   }
 
-  handleHeader() {
-    if (this.inCode || this.inCodeBlock) this.output += "#";
-    else {
-      this.output += "<h1>";
-      this.inHeader = true;
-      this.index++;
+  ensureInTextTag() {
+    if (
+      !this.inHeader &&
+      !this.inParagraph &&
+      !this.inCodeBlock &&
+      !this.inList
+    ) {
+      this.output += "<p>";
+      this.inParagraph = true;
     }
   }
 
+  handleHeader() {
+    if (
+      this.nextCharacter() === " " &&
+      !this.inHeader &&
+      !this.inCode &&
+      !this.inCodeBlock
+    ) {
+      this.output += "<h1>";
+      this.inHeader = true;
+      this.index++;
+    } else this.handleCharacter();
+  }
+
   handleUnderline() {
-    if (this.inCode || this.inCodeBlock) this.output += "__";
-    else {
+    if (this.nextCharacter() === "_" && !this.inCode && !this.inCodeBlock) {
+      this.ensureInTextTag();
       this.output += this.inUnderline ? "</u>" : "<u>";
       this.inUnderline = !this.inUnderline;
-    }
-    this.index++;
+      this.index++;
+    } else this.handleCharacter();
   }
 
   handleCode() {
@@ -103,45 +92,76 @@ export default class Compiler {
       this.inUnderline = false;
     }
     if (this.previousCharacter() === "\n" || this.inCodeBlock) {
-      this.output += this.inCodeBlock ? "</pre>" : "<pre>";
-      this.inCode = !this.inCodeBlock;
+      this.output += this.inCodeBlock ? "</pre>\n" : "<pre>";
+      this.inCodeBlock = !this.inCodeBlock;
     } else {
+      this.ensureInTextTag();
       this.output += this.inCode ? "</code>" : "<code>";
       this.inCode = !this.inCode;
     }
   }
 
   handleBullet() {
-    if (this.previousCharacter() != "\n" || this.nextCharacter() != " ") return;
-    if (!this.inList) {
-      this.output += "<ul>";
-      this.inList = true;
-    }
-    this.output += "<li>";
-    this.index++;
+    if (this.previousCharacter() === "\n" && this.nextCharacter() === " ") {
+      if (!this.inList) {
+        this.output += "<ul>";
+        this.inList = true;
+      }
+      this.output += "<li>";
+      this.index++;
+    } else this.handleCharacter();
   }
 
   handleNewline() {
     if (this.inHeader) {
-      this.output += "</h1>";
+      this.output += "</h1>\n";
       this.inHeader = false;
-    }
-    else if (this.inList) {
-      this.output += "</li>";
-      if (this.nextTwoCharacters != "* ") {
-        this.ouput += "</ul>";
+    } else if (this.inParagraph) {
+      this.output += "</p>\n";
+      this.inParagraph = false;
+    } else if (this.inCodeBlock) {
+      this.output += "\n";
+    } else if (this.inList) {
+      this.output += "</li>\n";
+      if (
+        !(this.nextCharacter() === "*" && this.input[this.index + 2] === " ")
+      ) {
+        this.output += "</ul>\n";
         this.inList = false;
       }
     }
-    else if (
-      this.previousCharacter() != "`" &&
-      this.nextCharacter() != "`" &&
-      this.nextTwoCharacters() != "* " &&
-      !this.inCode &&
-      !this.inCodeBlock
-    ) {
-      this.output += "<br>";
-    }
-    this.output += "\n";
   }
-} */
+
+  handleCharacter() {
+    this.ensureInTextTag();
+    this.output += this.currChar;
+  }
+
+  closeOpenTags() {
+    if (this.inParagraph) {
+      this.output += "</p>\n";
+      this.inParagraph = false;
+    }
+    if (this.inUnderline) {
+      this.output += "</u>";
+      this.inUnderline = false;
+    }
+    if (this.inHeader) {
+      this.output += "</h1>\n";
+      this.inHeader = false;
+    }
+    if (this.inCode) {
+      this.output += "</code>";
+      this.inCodeBlock = false;
+    }
+    if (this.inCodeBlock) {
+      this.output += "</pre>\n";
+      this.inCodeBlock = false;
+    }
+    if (this.inList) {
+      this.output += "</li>\n</ul>\n";
+      this.inList = false;
+    }
+    this.output += "</body>\n</html>";
+  }
+}
