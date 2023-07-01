@@ -40,6 +40,26 @@ function downloadHtmlFile() {
   document.body.removeChild(element);
 }
 
+
+function scrollIFrame() {
+  let iFrame = document.getElementById("iframeoutput");
+  let iFrameScrollingElement = iFrame.contentWindow.document.scrollingElement;
+  
+  let inputArea = document.getElementById("notearea");
+  let totalNoteTextLength = inputArea.value.length;
+  let ratio = inputArea.selectionStart / inputArea.value.length;
+  
+  iFrameScrollingElement.scrollTop = iFrameScrollingElement.scrollTopMax * ratio;
+}
+
+
+window.onload = (e) => {
+  document.getElementById("notearea").addEventListener("click", scrollIFrame);
+  document.getElementById("iframeoutput").addEventListener("load", scrollIFrame);
+};
+
+
+
 function MyApp() {
   const [note, setNote] = useState(exampleString);
 
@@ -50,7 +70,7 @@ function MyApp() {
       <textarea
         value={note}
         onKeyDown={handleTextareaTab}
-        onChange={(e) => setNote(e.target.value)}
+        onChange={(e) => {setNote(e.target.value); scrollIFrame();}}
         spellCheck={false}
         id={"notearea"}
       />
