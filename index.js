@@ -11,8 +11,8 @@ import Compiler from "./Compiler.js";
 // * independent sizing
 
 const exampleString =
-  "font(Times New Roman)\nLoad any Google font family " +
-  "like so (only on the first line)# Header\nNormal text\nLine breaks " +
+  "Load any Google font family on any line, but only once per document:\n" +
+  "font(Times New Roman)\n# Header\nNormal text\nLine breaks " +
   "__underlined__ `code doesn't do # header or __underline__`\n`code " +
   "block if u start on a new line\n  code block respects\n    " +
   "indentation   and   white   space __# `\n* bullet\n* points";

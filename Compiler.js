@@ -9,12 +9,13 @@ export default class Compiler {
     this.inCodeBlock = false;
     this.inList = false;
     this.inParagraph = false;
-    this.output = "<!DOCTYPE html>\n<html>\n<body>\n";
+    this.output = "<!DOCTYPE html>\n<html>\n";
     this.index = 0;
 
-    let fontPattern = /^font\([^)]+\)\n/i;
+    let fontPattern = /font\([^)]+\)\n/i;
     let fontDefinition = this.input.match(fontPattern);
     if (fontDefinition) {
+      this.input = this.input.replace(fontDefinition[0], "");
       let fontFamilyName = fontDefinition[0].split("(")[1].split(")")[0];
       this.output +=
         '<head>\n<link rel="stylesheet"' +
@@ -24,8 +25,8 @@ export default class Compiler {
         "<style>body {font-family: " +
         fontFamilyName +
         "</style>\n</head>\n";
-      this.index += fontDefinition[0].length;
     }
+
     this.output += "<body>\n";
 
     for (; this.index < this.input.length; this.index++) {
