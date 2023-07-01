@@ -22,16 +22,16 @@ textarea:focus {
   color: LightGray;
 }
 
-#renderbutton {
-  position: fixed;
-  right: 50%;
-  bottom: 0;
-}
-
 #iframeoutput {
   position: fixed;
   right: 0px;
   width: 50%;
   height: 100%;
   border: none;
+}
+
+#download-button {
+  position: fixed;
+  right: 0;
+  bottom: 0;
 }

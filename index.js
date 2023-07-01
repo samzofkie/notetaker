@@ -4,10 +4,8 @@ import { createRoot } from "react-dom/client";
 import Compiler from "./Compiler.js";
 
 // TODO
-// * html download button
 // * incremental rendering
 // * font / color syntax
-// * indentation
 // * adjust iframe view to textarea cursor position
 // * text stored in between refreshes
 
@@ -20,13 +18,26 @@ function handleTextareaTab(e) {
     var start = e.target.selectionStart;
     var end = e.target.selectionEnd;
 
-    // set textarea value to: text before caret + tab + text after caret
     e.target.value =
       e.target.value.substring(0, start) + "  " + e.target.value.substring(end);
 
-    // put caret at right position again
     e.target.selectionStart = e.target.selectionEnd = start + 2;
   }
+}
+
+function downloadHtmlFile() {
+  let element = document.createElement('a');
+  let htmlText = document.getElementById("iframeoutput").srcdoc;
+  console.log(htmlText);
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(htmlText));
+  element.setAttribute('download', "test.html");
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
 }
 
 function MyApp() {
@@ -48,6 +59,7 @@ function MyApp() {
         id={"iframeoutput"}
         title={"Rendered HTML output"}
       />
+      <button id={"download-button"} onClick={downloadHtmlFile}>Download HTML</button>
     </>
   );
 }
