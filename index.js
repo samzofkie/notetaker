@@ -5,12 +5,17 @@ import Compiler from "./Compiler.js";
 
 // TODO
 // * incremental rendering
-// * font / color syntax
-// * adjust iframe view to textarea cursor position
+// * color syntax
 // * text stored in between refreshes
+// * color cursor
+// * independent sizing
 
 const exampleString =
-  "# Header\nNormal text\nLine breaks __underlined__ `code doesn't do # header or __underline__`\n`code block if u start on a new line\n  code block respects\n    indentation   and   white   space __# `\n* bullet\n* points";
+  "font(Times New Roman)\nLoad any Google font family " +
+  "like so (only on the first line)# Header\nNormal text\nLine breaks " +
+  "__underlined__ `code doesn't do # header or __underline__`\n`code " +
+  "block if u start on a new line\n  code block respects\n    " +
+  "indentation   and   white   space __# `\n* bullet\n* points";
 
 function handleTextareaTab(e) {
   if (e.key == "Tab") {
@@ -26,13 +31,16 @@ function handleTextareaTab(e) {
 }
 
 function downloadHtmlFile() {
-  let element = document.createElement('a');
+  let element = document.createElement("a");
   let htmlText = document.getElementById("iframeoutput").srcdoc;
   console.log(htmlText);
-  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(htmlText));
-  element.setAttribute('download', "test.html");
+  element.setAttribute(
+    "href",
+    "data:text/plain;charset=utf-8," + encodeURIComponent(htmlText)
+  );
+  element.setAttribute("download", "test.html");
 
-  element.style.display = 'none';
+  element.style.display = "none";
   document.body.appendChild(element);
 
   element.click();
@@ -40,25 +48,23 @@ function downloadHtmlFile() {
   document.body.removeChild(element);
 }
 
-
 function scrollIFrame() {
   let iFrame = document.getElementById("iframeoutput");
   let iFrameScrollingElement = iFrame.contentWindow.document.scrollingElement;
-  
+
   let inputArea = document.getElementById("notearea");
-  let totalNoteTextLength = inputArea.value.length;
   let ratio = inputArea.selectionStart / inputArea.value.length;
-  
-  iFrameScrollingElement.scrollTop = iFrameScrollingElement.scrollTopMax * ratio;
+
+  iFrameScrollingElement.scrollTop =
+    iFrameScrollingElement.scrollTopMax * ratio;
 }
 
-
-window.onload = (e) => {
+window.onload = () => {
   document.getElementById("notearea").addEventListener("click", scrollIFrame);
-  document.getElementById("iframeoutput").addEventListener("load", scrollIFrame);
+  document
+    .getElementById("iframeoutput")
+    .addEventListener("load", scrollIFrame);
 };
-
-
 
 function MyApp() {
   const [note, setNote] = useState(exampleString);
@@ -70,7 +76,10 @@ function MyApp() {
       <textarea
         value={note}
         onKeyDown={handleTextareaTab}
-        onChange={(e) => {setNote(e.target.value); scrollIFrame();}}
+        onChange={(e) => {
+          setNote(e.target.value);
+          scrollIFrame();
+        }}
         spellCheck={false}
         id={"notearea"}
       />
@@ -79,7 +88,9 @@ function MyApp() {
         id={"iframeoutput"}
         title={"Rendered HTML output"}
       />
-      <button id={"download-button"} onClick={downloadHtmlFile}>Download HTML</button>
+      <button id={"download-button"} onClick={downloadHtmlFile}>
+        Download HTML
+      </button>
     </>
   );
 }

@@ -10,8 +10,25 @@ export default class Compiler {
     this.inList = false;
     this.inParagraph = false;
     this.output = "<!DOCTYPE html>\n<html>\n<body>\n";
+    this.index = 0;
 
-    for (this.index = 0; this.index < this.input.length; this.index++) {
+    let fontPattern = /^font\([^)]+\)\n/i;
+    let fontDefinition = this.input.match(fontPattern);
+    if (fontDefinition) {
+      let fontFamilyName = fontDefinition[0].split("(")[1].split(")")[0];
+      this.output +=
+        '<head>\n<link rel="stylesheet"' +
+        'href="https://fonts.googleapis.com/css2?family=' +
+        fontFamilyName.replaceAll(" ", "+") +
+        '" >\n' +
+        "<style>body {font-family: " +
+        fontFamilyName +
+        "</style>\n</head>\n";
+      this.index += fontDefinition[0].length;
+    }
+    this.output += "<body>\n";
+
+    for (; this.index < this.input.length; this.index++) {
       this.currChar = this.input[this.index];
       switch (this.currChar) {
         case "#":
