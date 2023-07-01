@@ -13,8 +13,51 @@ export default class Compiler {
     this.index = 0;
 
     let fontPattern = /font\([^)]+\)\n/i;
+    let backgroundColorPattern = /background\([^)]+\)\n/i;
+    let textColorPattern = /textcolor\([^)]+\)\n/i;
+
     let fontDefinition = this.input.match(fontPattern);
-    if (fontDefinition) {
+    let backgroundColorDefinition = this.input.match(backgroundColorPattern);
+    let textColorDefinition = this.input.match(textColorPattern);
+
+    function trimParenthesisSyntax(s) {
+      return s[0].split("(")[1].split(")")[0];
+    }
+
+    if (fontDefinition || backgroundColorDefinition || textColorDefinition) {
+      this.output += "<head\n>";
+
+      if (fontDefinition) {
+        this.input = this.input.replace(fontDefinition[0], "");
+        let fontFamilyName = trimParenthesisSyntax(fontDefinition);
+        this.output +=
+          '<link rel="stylesheet"' +
+          'href="https://fonts.googleapis.com/css2?family=' +
+          fontFamilyName.replaceAll(" ", "+") +
+          '" >\n' +
+          "<style>\nbody {\nfont-family: " +
+          fontFamilyName +
+          ";\n";
+      } else this.output += "<style>\nbody {\n\n";
+
+      if (backgroundColorDefinition) {
+        this.input = this.input.replace(backgroundColorDefinition[0], "");
+        let backgroundColorName = trimParenthesisSyntax(
+          backgroundColorDefinition
+        );
+        this.output += "background-color: " + backgroundColorName + ";\n";
+      }
+
+      if (textColorDefinition) {
+        this.input = this.input.replace(textColorDefinition[0], "");
+        let textColorName = trimParenthesisSyntax(textColorDefinition);
+        this.output += "color: " + textColorName + ";\n";
+      }
+
+      this.output += "}\n</style>";
+    }
+
+    /*if (fontDefinition) {
       this.input = this.input.replace(fontDefinition[0], "");
       let fontFamilyName = fontDefinition[0].split("(")[1].split(")")[0];
       this.output +=
@@ -25,7 +68,7 @@ export default class Compiler {
         "<style>body {font-family: " +
         fontFamilyName +
         "</style>\n</head>\n";
-    }
+    }*/
 
     this.output += "<body>\n";
 
