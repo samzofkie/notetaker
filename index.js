@@ -5,9 +5,9 @@ import Compiler from "./Compiler.js";
 
 // TODO
 // * incremental rendering
-// * color syntax
+// * beef up scroll algorithm
 // * text stored in between refreshes
-// * color cursor
+// * visible cursor
 // * independent sizing
 
 const exampleString =
@@ -24,10 +24,8 @@ function handleTextareaTab(e) {
     e.preventDefault();
     var start = e.target.selectionStart;
     var end = e.target.selectionEnd;
-
     e.target.value =
       e.target.value.substring(0, start) + "  " + e.target.value.substring(end);
-
     e.target.selectionStart = e.target.selectionEnd = start + 2;
   }
 }
@@ -41,32 +39,21 @@ function downloadHtmlFile() {
     "data:text/plain;charset=utf-8," + encodeURIComponent(htmlText)
   );
   element.setAttribute("download", "test.html");
-
   element.style.display = "none";
   document.body.appendChild(element);
-
   element.click();
-
   document.body.removeChild(element);
 }
 
 function scrollIFrame() {
-  let iFrame = document.getElementById("iframeoutput");
-  let iFrameScrollingElement = iFrame.contentWindow.document.scrollingElement;
-
+  let iFrame = document.getElementById("iframeoutput"); 
   let inputArea = document.getElementById("notearea");
+  let iFrameScrollingElement = iFrame.contentWindow.document.scrollingElement;
   let ratio = inputArea.selectionStart / inputArea.value.length;
-
   iFrameScrollingElement.scrollTop =
     iFrameScrollingElement.scrollTopMax * ratio;
 }
 
-window.onload = () => {
-  document.getElementById("notearea").addEventListener("click", scrollIFrame);
-  document
-    .getElementById("iframeoutput")
-    .addEventListener("load", scrollIFrame);
-};
 
 function MyApp() {
   const [note, setNote] = useState(exampleString);
@@ -78,14 +65,13 @@ function MyApp() {
       <textarea
         value={note}
         onKeyDown={handleTextareaTab}
-        onChange={(e) => {
-          setNote(e.target.value);
-          scrollIFrame();
-        }}
+        onChange={(e) => {setNote(e.target.value);}}
+        onClick={scrollIFrame}
         spellCheck={false}
         id={"notearea"}
       />
       <iframe
+        onLoad={scrollIFrame}
         srcDoc={compiler.compile(note)}
         id={"iframeoutput"}
         title={"Rendered HTML output"}
