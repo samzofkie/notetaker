@@ -48,15 +48,16 @@ export default class Compiler {
     this.closeOpenTags();
 
     this.output += "</body>\n</html>";
-    
+
     return this.output;
   }
 
   parseStyleDeclarations() {
     let styleOptions = {
-      font: {cssName: "color"}, 
-      background: {cssName: "background-color"}, 
-      textcolor: {cssName: "color"}
+      font: { cssName: "font-family", selector: "body" },
+      background: { cssName: "background-color", selector: "body" },
+      textcolor: { cssName: "color", selector: "body" },
+      indent: { cssName: "text-indent", selector: "p" }
     };
 
     function trimParenthesisSyntax(s) {
@@ -74,23 +75,36 @@ export default class Compiler {
         atLeastOneOption = true;
       }
     }
-    
-    if (atLeastOneOption) {
-      this.output += "<head>\n";
 
-      if (styleOptions.font.value)
-        this.output += '<link rel="stylesheet" href="https://' + 
-          "fonts.googleapis.com/css2?family=" + 
-          styleOptions.font.value.replaceAll(" ", "+") + '">\n'
+    if (atLeastOneOption) this.writeHead(styleOptions);
+  }
 
-      this.output += "<style>\nbody {\n"
+  writeHead(styleOptions) {
+    this.output += "<head>\n";
 
-      for (let o in styleOptions)
-        this.output += styleOptions[o].cssName + ": " + 
-          styleOptions[o].value + ";\n";
-    
-      this.output += "}\n</style>\n</head>\n";
-    }  
+    if (styleOptions.font.value)
+      this.output +=
+        '<link rel="stylesheet" href="https://' +
+        "fonts.googleapis.com/css2?family=" +
+        styleOptions.font.value.replaceAll(" ", "+") +
+        '">\n';
+
+    // Build CSS declaration strings in cssDeclartions
+    let cssDeclarations = {};
+    for (let o in styleOptions) {
+      let option = styleOptions[o];
+
+      if (cssDeclarations[option.selector] === undefined)
+        cssDeclarations[option.selector] = "";
+
+      cssDeclarations[option.selector] +=
+        option.cssName + ": " + option.value + ";\n";
+    }
+
+    this.output += "<style>\n";
+    for (let d in cssDeclarations)
+      this.output += d + " {\n" + cssDeclarations[d] + "}\n";
+    this.output += "</style>\n</head>\n";
   }
 
   nextCharacter() {
