@@ -12,63 +12,7 @@ export default class Compiler {
     this.output = "<!DOCTYPE html>\n<html>\n";
     this.index = 0;
 
-    let fontPattern = /font\([^)]+\)\n/i;
-    let backgroundColorPattern = /background\([^)]+\)\n/i;
-    let textColorPattern = /textcolor\([^)]+\)\n/i;
-
-    let fontDefinition = this.input.match(fontPattern);
-    let backgroundColorDefinition = this.input.match(backgroundColorPattern);
-    let textColorDefinition = this.input.match(textColorPattern);
-
-    function trimParenthesisSyntax(s) {
-      return s[0].split("(")[1].split(")")[0];
-    }
-
-    if (fontDefinition || backgroundColorDefinition || textColorDefinition) {
-      this.output += "<head\n>";
-
-      if (fontDefinition) {
-        this.input = this.input.replace(fontDefinition[0], "");
-        let fontFamilyName = trimParenthesisSyntax(fontDefinition);
-        this.output +=
-          '<link rel="stylesheet"' +
-          'href="https://fonts.googleapis.com/css2?family=' +
-          fontFamilyName.replaceAll(" ", "+") +
-          '" >\n' +
-          "<style>\nbody {\nfont-family: " +
-          fontFamilyName +
-          ";\n";
-      } else this.output += "<style>\nbody {\n\n";
-
-      if (backgroundColorDefinition) {
-        this.input = this.input.replace(backgroundColorDefinition[0], "");
-        let backgroundColorName = trimParenthesisSyntax(
-          backgroundColorDefinition
-        );
-        this.output += "background-color: " + backgroundColorName + ";\n";
-      }
-
-      if (textColorDefinition) {
-        this.input = this.input.replace(textColorDefinition[0], "");
-        let textColorName = trimParenthesisSyntax(textColorDefinition);
-        this.output += "color: " + textColorName + ";\n";
-      }
-
-      this.output += "}\n</style>";
-    }
-
-    /*if (fontDefinition) {
-      this.input = this.input.replace(fontDefinition[0], "");
-      let fontFamilyName = fontDefinition[0].split("(")[1].split(")")[0];
-      this.output +=
-        '<head>\n<link rel="stylesheet"' +
-        'href="https://fonts.googleapis.com/css2?family=' +
-        fontFamilyName.replaceAll(" ", "+") +
-        '" >\n' +
-        "<style>body {font-family: " +
-        fontFamilyName +
-        "</style>\n</head>\n";
-    }*/
+    this.parseStyleDeclarations();
 
     this.output += "<body>\n";
 
@@ -102,7 +46,51 @@ export default class Compiler {
       }
     }
     this.closeOpenTags();
+
+    this.output += "</body>\n</html>";
+    
     return this.output;
+  }
+
+  parseStyleDeclarations() {
+    let styleOptions = {
+      font: {cssName: "color"}, 
+      background: {cssName: "background-color"}, 
+      textcolor: {cssName: "color"}
+    };
+
+    function trimParenthesisSyntax(s) {
+      return s.split("(")[1].split(")")[0];
+    }
+
+    let atLeastOneOption = false;
+    for (let o in styleOptions) {
+      let option = styleOptions[o];
+      option.pattern = new RegExp(`${o}\\([^)]+\\)\\n`);
+      option.value = this.input.match(option.pattern);
+      if (option.value) {
+        this.input = this.input.replace(option.value[0], "");
+        option.value = trimParenthesisSyntax(option.value[0]);
+        atLeastOneOption = true;
+      }
+    }
+    
+    if (atLeastOneOption) {
+      this.output += "<head>\n";
+
+      if (styleOptions.font.value)
+        this.output += '<link rel="stylesheet" href="https://' + 
+          "fonts.googleapis.com/css2?family=" + 
+          styleOptions.font.value.replaceAll(" ", "+") + '">\n'
+
+      this.output += "<style>\nbody {\n"
+
+      for (let o in styleOptions)
+        this.output += styleOptions[o].cssName + ": " + 
+          styleOptions[o].value + ";\n";
+    
+      this.output += "}\n</style>\n</head>\n";
+    }  
   }
 
   nextCharacter() {
@@ -223,6 +211,5 @@ export default class Compiler {
       this.output += "</li>\n</ul>\n";
       this.inList = false;
     }
-    this.output += "</body>\n</html>";
   }
 }
