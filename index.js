@@ -46,14 +46,13 @@ function downloadHtmlFile() {
 }
 
 function scrollIFrame() {
-  let iFrame = document.getElementById("iframeoutput"); 
+  let iFrame = document.getElementById("iframeoutput");
   let inputArea = document.getElementById("notearea");
   let iFrameScrollingElement = iFrame.contentWindow.document.scrollingElement;
   let ratio = inputArea.selectionStart / inputArea.value.length;
   iFrameScrollingElement.scrollTop =
     iFrameScrollingElement.scrollTopMax * ratio;
 }
-
 
 function MyApp() {
   const [note, setNote] = useState(exampleString);
@@ -65,7 +64,9 @@ function MyApp() {
       <textarea
         value={note}
         onKeyDown={handleTextareaTab}
-        onChange={(e) => {setNote(e.target.value);}}
+        onChange={(e) => {
+          setNote(e.target.value);
+        }}
         onClick={scrollIFrame}
         spellCheck={false}
         id={"notearea"}

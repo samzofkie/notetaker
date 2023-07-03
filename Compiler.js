@@ -94,11 +94,13 @@ export default class Compiler {
     for (let o in styleOptions) {
       let option = styleOptions[o];
 
-      if (cssDeclarations[option.selector] === undefined)
-        cssDeclarations[option.selector] = "";
+      if (option.value) {
+        if (cssDeclarations[option.selector] === undefined)
+          cssDeclarations[option.selector] = "";
 
-      cssDeclarations[option.selector] +=
-        option.cssName + ": " + option.value + ";\n";
+        cssDeclarations[option.selector] +=
+          option.cssName + ": " + option.value + ";\n";
+      }
     }
 
     this.output += "<style>\n";
@@ -201,10 +203,6 @@ export default class Compiler {
   }
 
   closeOpenTags() {
-    if (this.inParagraph) {
-      this.output += "</p>\n";
-      this.inParagraph = false;
-    }
     if (this.inUnderline) {
       this.output += "</u>";
       this.inUnderline = false;
@@ -217,6 +215,11 @@ export default class Compiler {
       this.output += "</code>";
       this.inCodeBlock = false;
     }
+    if (this.inParagraph) {
+      this.output += "</p>\n";
+      this.inParagraph = false;
+    }
+
     if (this.inCodeBlock) {
       this.output += "</pre>\n";
       this.inCodeBlock = false;
